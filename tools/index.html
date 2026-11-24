@@ -21,13 +21,65 @@
 <script src="assets/common.js"></script>
 <script>
   // 시작 페이지 전용 — 저장소는 common.js의 loadData로만 읽는다.
-  (function () {
+  // 요약은 저장된 값만 보여 준다(CSV를 다시 계산하지 않음, design.md 2절).
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function numText(v) {
+    return typeof v === "number" ? String(v) : "-";
+  }
+
+  function renderSummary() {
     var box = document.getElementById("summary");
-    var data = loadData();
-    if (data.tally === null) {
-      box.innerHTML = '<p class="notice">저장된 데이터가 없습니다. 집계 페이지에서 먼저 붙여 넣으세요.</p>';
+    box.innerHTML = "";
+    var t = loadData().tally;
+    if (t === null || typeof t !== "object") {
+      box.appendChild(el("p", "notice", "저장된 데이터가 없습니다. 집계 페이지에서 먼저 붙여 넣으세요."));
+      return;
     }
-  })();
+    var excludedCount = Array.isArray(t.excluded) ? t.excluded.length : 0;
+    var check = t.check || {};
+
+    var table = el("table");
+    var rows = [
+      ["집계한 때", t.savedAt ? String(t.savedAt) : "-"],
+      ["전체 행", numText(t.totalRows)],
+      ["제외 행", String(excludedCount)],
+      ["합계 (전체 − 제외)", numText(check.expected)]
+    ];
+    rows.forEach(function (r) {
+      var tr = el("tr");
+      tr.appendChild(el("th", "", r[0]));
+      tr.appendChild(el("td", r[0] === "집계한 때" ? "" : "num", r[1]));
+      table.appendChild(tr);
+    });
+
+    var tr = el("tr");
+    tr.appendChild(el("th", "", "판정"));
+    var td = el("td");
+    if (check.match === true) {
+      td.appendChild(el("span", "match", "일치"));
+    } else if (check.match === false) {
+      td.appendChild(el("span", "mismatch", "불일치"));
+    } else {
+      td.appendChild(el("span", "", "-"));
+    }
+    td.appendChild(document.createTextNode(
+      " (전체 − 제외 " + numText(check.expected) +
+      " · 유형별 합계 " + numText(check.typeSum) +
+      " · 처리상태별 합계 " + numText(check.statusSum) + ")"));
+    td.appendChild(el("span", "review", "담당 검토 후 확정"));
+    tr.appendChild(td);
+    table.appendChild(tr);
+
+    box.appendChild(table);
+  }
+
+  renderSummary();
 </script>
 </body>
 </html>
