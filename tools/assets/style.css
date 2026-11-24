@@ -46,7 +46,7 @@ textarea { width: 100%; min-height: 12rem; font-family: monospace; font-size: 0.
 table { border-collapse: collapse; width: 100%; background: #fff; margin: 0.5rem 0 1rem; }
 th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: left; }
 th { background: #f0f0f0; }
-td.num { text-align: right; }
+td.num, th.num { text-align: right; }
 
 /* 안내·오류·판정 */
 .notice { padding: 8px 12px; border-left: 4px solid #2a5db0; background: #eef3fb; }
