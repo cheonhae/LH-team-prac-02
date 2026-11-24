@@ -201,7 +201,19 @@ document.getElementById("btn-tally").addEventListener("click", function () {
     return;
   }
   var tally = buildTally(parsed);
+  // 저장은 common.js 함수로만 — 다시 집계하면 tally를 통째로 덮어쓴다.
+  var data = loadData();
+  data.tally = tally;
+  saveData(data);
   render(tally);
-  // 저장은 다음 라운드에서 붙인다.
-  showMsg("notice", "집계했습니다(아직 저장하지 않음 — 저장은 다음 라운드).");
+  showMsg("notice", "집계 결과를 저장했습니다(집계한 때 " + tally.savedAt + "). 다시 집계하면 덮어씁니다.");
 });
+
+// 페이지를 열 때 저장된 결과가 있으면 그대로 보여 준다(CSV를 다시 계산하지 않음).
+(function showSaved() {
+  var t = loadData().tally;
+  if (t && typeof t === "object" && Array.isArray(t.excluded) && t.check) {
+    render(t);
+    showMsg("notice", "저장된 집계 결과입니다(집계한 때 " + t.savedAt + "). 새로 붙여 넣고 [집계]를 누르면 덮어씁니다.");
+  }
+})();
