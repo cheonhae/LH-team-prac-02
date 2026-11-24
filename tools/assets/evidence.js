@@ -14,6 +14,40 @@ function el(tag, cls, text) {
   return e;
 }
 
+// CSV 한 칸 — 쉼표·큰따옴표·줄바꿈이 있으면 큰따옴표로 감싸고, 안의 큰따옴표는 두 번 쓴다.
+function csvCell(v) {
+  var s = v === undefined || v === null ? "" : String(v);
+  if (/[",\r\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+// excluded_rows.csv 내용(design.md 2절) — 첫 줄 원본행번호,사유,+머리글, 이어서 제외 행마다 한 줄.
+// 화면 표와 같은 tally.excluded에서 만든다. 엑셀 한글용 UTF-8 BOM을 앞에 붙인다.
+function buildCsv(tally) {
+  var lines = [["원본행번호", "사유"].concat(tally.header).map(csvCell).join(",")];
+  tally.excluded.forEach(function (x) {
+    var cells = [x.row, x.reason];
+    tally.header.forEach(function (name, i) {
+      cells.push(x.values && x.values[i] !== undefined ? x.values[i] : "");
+    });
+    lines.push(cells.map(csvCell).join(","));
+  });
+  return "\uFEFF" + lines.join("\r\n") + "\r\n";
+}
+
+// 만든 CSV 텍스트를 excluded_rows.csv 파일로 내려받는다(외부 전송 없음).
+function downloadCsv(text) {
+  var blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "excluded_rows.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+
 // 저장된 tally의 제외 행 목록을 표로 그린다(값은 textContent로만 넣는다).
 // 표의 행은 tally.excluded 그대로 — 원본 순서, 다시 계산하지 않음.
 function render(tally) {
@@ -28,6 +62,14 @@ function render(tally) {
     box.appendChild(el("p", "notice", "제외된 행이 없습니다."));
     return;
   }
+
+  var btnP = el("p");
+  var btn = el("button", "", "excluded_rows.csv 내려받기");
+  btn.type = "button";
+  btn.id = "btn-csv";
+  btn.addEventListener("click", function () { downloadCsv(buildCsv(tally)); });
+  btnP.appendChild(btn);
+  box.appendChild(btnP);
 
   var table = el("table");
   var head = el("tr");
