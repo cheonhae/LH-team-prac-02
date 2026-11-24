@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>집계 페이지 — 1조 주간 민원대장 집계 검증</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<h1>집계 페이지</h1>
+<p>[가상 자료] 실습용 가상 표본만 붙여 넣으세요. 실제 민원 자료를 넣지 마세요.</p>
+
+<ul class="menu">
+  <li><a href="../index.html">시작 페이지</a></li>
+  <li><a href="tally.html">집계 페이지</a></li>
+  <li><a href="evidence.html">근거 페이지</a></li>
+</ul>
+
+<h2>민원대장 CSV 붙여 넣기</h2>
+<div class="box">
+  <p>머리글 줄을 포함한 CSV 내용 전체를 붙여 넣고 [집계]를 누르세요.</p>
+  <textarea id="csv-input" placeholder="접수번호,접수일,유형,처리상태,내용요약"></textarea>
+  <p><button type="button" id="btn-tally">집계</button></p>
+  <p id="tally-msg" class="hidden"></p>
+</div>
+
+<div id="result" class="hidden"></div>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/tally.js"></script>
+</body>
+</html>
