@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1조 주간 민원대장 집계 검증</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<h1>1조 주간 민원대장 집계 검증</h1>
+<p>[가상 자료] 실습용 가상 표본으로만 씁니다. 실제 민원 자료를 넣지 마세요.</p>
+
+<ul class="menu">
+  <li><a href="pages/tally.html">집계 페이지</a></li>
+  <li><a href="pages/evidence.html">근거 페이지</a></li>
+</ul>
+
+<h2>저장된 데이터 요약</h2>
+<div id="summary" class="box"></div>
+
+<script src="assets/common.js"></script>
+<script>
+  // 시작 페이지 전용 — 저장소는 common.js의 loadData로만 읽는다.
+  (function () {
+    var box = document.getElementById("summary");
+    var data = loadData();
+    if (data.tally === null) {
+      box.innerHTML = '<p class="notice">저장된 데이터가 없습니다. 집계 페이지에서 먼저 붙여 넣으세요.</p>';
+    }
+  })();
+</script>
+</body>
+</html>
